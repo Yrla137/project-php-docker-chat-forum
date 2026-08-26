@@ -1,0 +1,127 @@
+SQL
+
+USE mydatabase;
+
+-- USERS
+-- Stores all registered users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+-- GROUP ROLES
+-- Roles a user can have inside a group
+CREATE TABLE group_roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- FORUM GROUPS
+-- Stores the forum groups
+CREATE TABLE forum_groups (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    created_by INT NOT NULL,
+
+    FOREIGN KEY (created_by)
+        REFERENCES users(id)
+);
+
+-- GROUP MEMBERS
+-- Connects users and groups
+-- Stores the user's role in that group
+CREATE TABLE group_members (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    group_id INT NOT NULL,
+    role_id INT NOT NULL,
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id),
+
+    FOREIGN KEY (group_id)
+        REFERENCES forum_groups(id),
+
+    FOREIGN KEY (role_id)
+        REFERENCES group_roles(id),
+
+    UNIQUE (user_id, group_id)
+);
+
+-- DISCUSSIONS
+-- Topics created inside groups
+CREATE TABLE discussions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    group_id INT NOT NULL,
+    user_id INT NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (group_id)
+        REFERENCES forum_groups(id),
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+);
+
+-- POSTS
+-- Messages written inside discussions
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    discussion_id INT NOT NULL,
+    user_id INT NOT NULL,
+    message TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (discussion_id)
+        REFERENCES discussions(id),
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+);
+
+-- APPLICATIONS
+-- Membership applications to groups
+CREATE TABLE applications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    group_id INT NOT NULL,
+    status ENUM('pending', 'approved', 'rejected')
+        NOT NULL DEFAULT 'pending',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id),
+
+    FOREIGN KEY (group_id)
+        REFERENCES forum_groups(id),
+
+    UNIQUE (user_id, group_id)
+);
+
+-- INVITATIONS
+-- One-time group invitation links
+CREATE TABLE invitations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    group_id INT NOT NULL,
+    created_by INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    used BOOLEAN NOT NULL DEFAULT FALSE,
+
+    FOREIGN KEY (group_id)
+        REFERENCES forum_groups(id),
+
+    FOREIGN KEY (created_by)
+        REFERENCES users(id)
+);
+
+-- DEFAULT GROUP ROLES
+INSERT INTO group_roles (name)
+VALUES
+    ('member'),
+    ('administrator');
