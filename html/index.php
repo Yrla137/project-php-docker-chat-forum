@@ -1,3 +1,10 @@
+
+<?php
+    require_once 'includes/database.php';
+
+    echo "Home page here!";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     
@@ -5,10 +12,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
-    <?php
-        echo "PHP fungerar!";
-    ?>
 
 </head>
 <body>
