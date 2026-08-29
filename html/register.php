@@ -16,12 +16,12 @@
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             // filter_var checks if something is vaild and in this case with FILTER_VALIDATE_EMAIL it checks if the email is valid.
-            echo("$email is not a valid email address");
+            echo("Please enter a valid email address.");
             exit();
             }
-        // change to 8
-        if (strlen($password) < 5) {
-            echo "Password must be at least 5 characters long.";
+
+        if (strlen($password) < 8) {
+            echo "Password must be at least 8 characters long.";
             exit();
         }
 
@@ -83,7 +83,7 @@
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
-            <p>Password must be at least 5 characters long.</p>
+            <p>Password must be at least 8 characters long.</p>
 
             <button type="submit">Register</button>
 
