@@ -33,7 +33,7 @@
 </head>
 <body>
 
-    <?php include 'includes/navbar.php'; ?>
+    <?php require_once 'includes/navbar.php'; ?>
 
     <?php if(isLoggedIn()): ?>
             <h1>Welcome back <?php echo htmlspecialchars($username);?>!</h1>
