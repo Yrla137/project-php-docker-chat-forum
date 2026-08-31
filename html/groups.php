@@ -26,17 +26,19 @@
 
     <h2>Forum Groups</h2>
 
-    <form method="POST" action="create-group.php">
-        <input type="text" name="group_name" placeholder="Enter group name" required>
-        <textarea name="group_description" placeholder="Enter group description" required></textarea>
-        <button type="submit">Create Group</button>
-    </form>
+    <div class="create-group-form">
+        <form method="POST" action="create-group.php">
+            <input type="text" name="group_name" placeholder="Enter group name" required>
+            <textarea name="group_description" placeholder="Enter group description" required></textarea>
+            <button type="submit">Create Group</button>
+         </form>
+    </div>
 
     <?php if (empty($groups)): ?>
         <p>No groups available.</p>
     <?php else: ?>
         <?php foreach ($groups as $group): ?>
-            <div class="group">
+            <div class="group-information">
                 <h3><?php echo htmlspecialchars($group['name']); ?></h3>
                 <p><?php echo htmlspecialchars($group['description']); ?></p>
                 <a href="group.php?id=<?php echo $group['id']; ?>">View Group</a>
