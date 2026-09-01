@@ -1,0 +1,53 @@
+<?php
+    require_once 'includes/database.php';
+    require_once 'includes/auth.php';
+    require_once 'includes/group-membership.php';
+
+    requireLogin();
+    
+    if($_SERVER['REQUEST_METHOD'] === "POST"){
+        $message = trim($_POST['message']);
+        $discussion_id = $_POST['discussion_id'];
+        $user_id = getUserId();
+
+        if(empty($message)){
+            echo "Please provide a message for the post.";
+            exit();
+        }
+
+        try{
+            
+            $sql = "SELECT group_id FROM discussions WHERE id = :discussion_id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':discussion_id' => $discussion_id]);
+            $discussion = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$discussion) {
+                echo "Discussion not found.";
+                exit();
+            }
+
+            $membership = getGroupMembership($pdo, $discussion['group_id'], $user_id);
+
+            if (!$membership) {
+                echo "You are not a member of this group.";
+                exit();
+            }
+
+
+            $sql = "INSERT INTO posts (message, discussion_id, user_id) VALUES (:message, :discussion_id, :user_id)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':message' => $message,
+                ':discussion_id' => $discussion_id,
+                ':user_id' => $user_id
+            ]);
+            header("Location: discussion.php?id=" . $discussion_id);
+            exit();
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            exit();
+        }
+    }
+?>

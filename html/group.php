@@ -43,7 +43,7 @@
         $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Fetch discussions related to the group
-        $sql = "SELECT discussions.id, discussions.subject, discussions.created_at, users.username AS creator FROM discussions 
+        $sql = "SELECT discussions.id, discussions.user_id, discussions.subject, discussions.created_at, users.username AS creator FROM discussions 
                 JOIN users ON discussions.user_id = users.id 
                 WHERE discussions.group_id = :group_id";
         $stmt = $pdo->prepare($sql);
@@ -62,6 +62,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Group</title>
+    <link rel="stylesheet" href="styles/delete-confirm.css">
 </head>
 <body>
 
@@ -97,6 +98,19 @@
                             <?php echo htmlspecialchars($discussion['subject']); ?>
                         </a> by <?php echo htmlspecialchars($discussion['creator']); ?> on <?php echo htmlspecialchars($discussion['created_at']); ?>
                     </li>
+
+                    <li>
+                        <?php if ($discussion['user_id'] == getUserId()): ?>
+                            <form
+                            class="delete-form"
+                            data-delete-message="Are you sure you want to delete this discussion? All posts within this discussion will also be deleted."
+                            method="POST"
+                            action="delete-discussion.php">
+                                <input type="hidden" name="discussion_id" value="<?php echo $discussion['id']; ?>">
+                                <button type="submit">Delete</button>
+                            </form>
+                        <?php endif; ?>
+                    </li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
@@ -109,6 +123,8 @@
             <button type="submit">Start a Discussion</button>
         </form>
     </div>
+
+    <?php require_once 'includes/delete-confirm.php'; ?>
 
 </body>
 </html>

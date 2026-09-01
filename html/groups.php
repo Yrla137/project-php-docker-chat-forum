@@ -5,11 +5,24 @@
 
     requireLogin();
 
-    $sql = "SELECT id, name, description FROM forum_groups";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $sql = "SELECT 
+            forum_groups.id,
+            forum_groups.name,
+            forum_groups.description,
+            group_roles.name AS role_name
+        FROM forum_groups
+        LEFT JOIN group_members 
+            ON forum_groups.id = group_members.group_id
+            AND group_members.user_id = :user_id
+        LEFT JOIN group_roles 
+            ON group_members.role_id = group_roles.id";
 
-    $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':user_id' => getUserId()
+]);
+
+$groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -19,6 +32,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groups</title>
+    <link rel="stylesheet" href="styles/delete-confirm.css">
 </head>
 <body>
 
@@ -34,17 +48,30 @@
          </form>
     </div>
 
-    <?php if (empty($groups)): ?>
-        <p>No groups available.</p>
-    <?php else: ?>
         <?php foreach ($groups as $group): ?>
+
             <div class="group-information">
                 <h3><?php echo htmlspecialchars($group['name']); ?></h3>
                 <p><?php echo htmlspecialchars($group['description']); ?></p>
-                <a href="group.php?id=<?php echo $group['id']; ?>">View Group</a>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
 
+                <?php if ($group['role_name'] !== null): ?>
+                    <a href="group.php?id=<?php echo $group['id']; ?>">View Group</a>
+                <?php endif; ?>
+
+                <?php if ($group['role_name'] === 'administrator'): ?>
+                    <form
+                    class="delete-form"
+                    data-delete-message = "Are you sure you want to delete this group? This action cannot be undone."
+                    method="POST"
+                    action="delete-group.php">
+                        <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                        <button type="submit">Delete Group</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+
+        <?php endforeach; ?>
+
+        <?php require_once 'includes/delete-confirm.php'; ?>
 </body>
 </html>

@@ -11,6 +11,8 @@
         $group_id = $_POST['group_id'];
         $user_id = getUserId();
 
+        
+
         $membership = getGroupMembership($pdo, $group_id, $user_id);
 
         if (!$membership) {

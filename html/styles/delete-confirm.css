@@ -1,0 +1,33 @@
+.delete-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-modal.show {
+    display: flex;
+}
+
+.delete-modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.delete-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.delete-modal-actions button {
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+}
