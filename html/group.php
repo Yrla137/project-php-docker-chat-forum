@@ -77,6 +77,12 @@
         <p><?php echo htmlspecialchars($group['description']); ?></p>
     </div>
 
+    <div class="admin-actions">
+        <?php if ($membership['role_name'] === 'administrator'): ?>
+            <a href="applications.php?group_id=<?php echo $group['id']; ?>">View Applications</a>
+        <?php endif; ?>
+    </div>
+
     <div class="group-members">
         <h3>Members</h3>
         <ul>

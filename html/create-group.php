@@ -57,6 +57,7 @@
                 ':role_id' => $role_id
             ]);
 
+            // Commit transaction
             $pdo->commit();
             header('Location: groups.php');
             exit();

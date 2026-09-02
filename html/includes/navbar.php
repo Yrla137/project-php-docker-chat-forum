@@ -10,8 +10,6 @@
                 <li><a href="index.php">Home</a></li>
                 <?php if (isLoggedIn()): ?>
                     <li><a href="groups.php">Groups</a></li>
-                    <li><a href="applications.php">Applications</a></li>
-                    <li><a href="profile.php">Profile</a></li>
                     <li>
                         <form class="logout-form" method="POST" action="logout.php">
                         <!-- When purring the logout file in action, it will send a POST request to the logout.php file which will log the user out. -->

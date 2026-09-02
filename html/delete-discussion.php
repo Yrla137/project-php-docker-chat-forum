@@ -43,6 +43,7 @@
             $stmt->execute([':discussion_id' => $discussionId, ':user_id' => $userId]);
 
             if ($stmt->rowCount() > 0) {
+                // Commit the transaction
                 $pdo->commit();
                 header("Location: group.php?id=" . $discussion['group_id']);
                 exit();

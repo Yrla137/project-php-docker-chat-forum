@@ -63,6 +63,7 @@
             $stmt->execute([':group_id' => $groupId]);
 
             if ($stmt->rowCount() > 0) {
+                // Commit the transaction
                 $pdo->commit();
                 header("Location: groups.php");
                 exit();

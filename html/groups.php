@@ -7,16 +7,21 @@
 
     // SELECT groups information along with a LEFT JOIN to get the role of the logged-in user in each group
     $sql = "SELECT 
-            forum_groups.id,
-            forum_groups.name,
-            forum_groups.description,
-            group_roles.name AS role_name
-        FROM forum_groups
-        LEFT JOIN group_members 
-            ON forum_groups.id = group_members.group_id
-            AND group_members.user_id = :user_id
-        LEFT JOIN group_roles 
-            ON group_members.role_id = group_roles.id";
+        forum_groups.id,
+        forum_groups.name,
+        forum_groups.description,
+        group_roles.name AS role_name,
+        applications.status AS application_status
+    FROM forum_groups
+    LEFT JOIN group_members 
+        ON forum_groups.id = group_members.group_id
+        AND group_members.user_id = :user_id
+    LEFT JOIN group_roles 
+        ON group_members.role_id = group_roles.id
+    LEFT JOIN applications
+        ON forum_groups.id = applications.group_id
+        AND applications.user_id = :user_id
+        AND applications.status = 'pending'";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -57,8 +62,28 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3><?php echo htmlspecialchars($group['name']); ?></h3>
                         <p><?php echo htmlspecialchars($group['description']); ?></p>
                     </div>
+
                 <?php if ($group['role_name'] !== null): ?>
                     <a href="group.php?id=<?php echo $group['id']; ?>">View Group</a>
+                
+                <?php elseif ($group['application_status'] === 'pending'): ?>
+                    <p>Waiting for approval.</p>
+                <?php else: ?>
+                    <form method="POST" action="apply-to-group.php">
+                        <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                        <button type="submit">Apply to join group</button>
+                    </form>
+                <?php endif; ?>
+
+                <?php if ($group['role_name'] === 'member'): ?>
+                    <form
+                    class="delete-form"
+                    data-delete-message = "Are you sure you want to leave this group?"
+                    method="POST"
+                    action="leave-group.php">
+                        <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                        <button type="submit">Leave Group</button>
+                    </form>
                 <?php endif; ?>
 
                 <?php if ($group['role_name'] === 'administrator'): ?>
