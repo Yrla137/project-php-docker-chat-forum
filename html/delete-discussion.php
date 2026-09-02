@@ -52,6 +52,7 @@
             }
 
         } catch (Exception $e) {
+            // Rollback the transaction in case of an error
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }

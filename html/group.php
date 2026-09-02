@@ -34,7 +34,7 @@
         }
 
         // Fetch group members and their roles
-        $sql = "SELECT users.username, group_roles.name AS group_role FROM group_members 
+        $sql = "SELECT users.id AS user_id, users.username, group_roles.name AS group_role FROM group_members 
                 JOIN users ON group_members.user_id = users.id 
                 JOIN group_roles ON group_members.role_id = group_roles.id 
                 WHERE group_members.group_id = :group_id";
@@ -79,7 +79,14 @@
 
     <div class="admin-actions">
         <?php if ($membership['role_name'] === 'administrator'): ?>
+            
             <a href="applications.php?group_id=<?php echo $group['id']; ?>">View Applications</a>
+
+            <form method="POST" action="create-invitation.php">
+                <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                <button type="submit">Create Invitation Link</button>
+            </form>
+
         <?php endif; ?>
     </div>
 
@@ -87,7 +94,19 @@
         <h3>Members</h3>
         <ul>
             <?php foreach ($members as $member): ?>
-                <li><?php echo htmlspecialchars($member['username']) . " - " . htmlspecialchars($member['group_role']); ?></li>
+                <li><?php echo htmlspecialchars($member['username']) . " - " . htmlspecialchars($member['group_role']); ?>
+                    <?php if( $membership['role_name'] === 'administrator' && $member['group_role'] !== 'administrator'): ?>
+                        <form
+                            class="delete-form"
+                            data-delete-message="Are you sure you want to remove this member from the group?"
+                            method="POST"
+                            action="remove-member.php">
+                            <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                            <input type="hidden" name="member_id" value="<?php echo $member['user_id']; ?>">
+                            <button type="submit">Remove</button>
+                        </form>
+                    <?php endif; ?>
+                </li>
             <?php endforeach; ?>
         </ul>
     </div>

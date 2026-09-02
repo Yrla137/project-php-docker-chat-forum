@@ -38,7 +38,7 @@
             exit();
 
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "Error: Creating discussion failed. " . $e->getMessage();
             exit();
         }
     }
