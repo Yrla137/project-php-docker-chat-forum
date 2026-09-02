@@ -16,8 +16,10 @@
         }
         
         try{
+            // Start a transaction
             $pdo->beginTransaction();
 
+            // Check if the discussion exists and if the user is the creator of the discussion
             $sql = "SELECT id, user_id, group_id FROM discussions WHERE id = :discussion_id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':discussion_id' => $discussionId]);
@@ -31,6 +33,7 @@
                 throw new Exception("You are not authorized to delete this discussion.");
             }
 
+            // Delete child posts before deleting the discussion
             $sql = "DELETE FROM posts WHERE discussion_id = :discussion_id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':discussion_id' => $discussionId]);

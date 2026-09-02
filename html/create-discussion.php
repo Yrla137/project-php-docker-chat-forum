@@ -10,9 +10,8 @@
         $subject = trim($_POST['subject']);
         $group_id = $_POST['group_id'];
         $user_id = getUserId();
-
         
-
+        // Check that the logged-in user is a member of the group
         $membership = getGroupMembership($pdo, $group_id, $user_id);
 
         if (!$membership) {
@@ -26,6 +25,8 @@
         }
 
         try{
+
+            // Insert the new discussion into the discussions table
             $sql = "INSERT INTO discussions (subject, group_id, user_id) VALUES (:subject, :group_id, :user_id)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([

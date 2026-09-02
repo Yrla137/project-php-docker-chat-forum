@@ -16,7 +16,7 @@
         }
 
         try{
-            
+            // Get the group that the discussion belongs to
             $sql = "SELECT group_id FROM discussions WHERE id = :discussion_id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':discussion_id' => $discussion_id]);
@@ -27,6 +27,7 @@
                 exit();
             }
 
+            // Check that the logged-in user is a member of that group
             $membership = getGroupMembership($pdo, $discussion['group_id'], $user_id);
 
             if (!$membership) {

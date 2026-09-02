@@ -5,6 +5,7 @@
 
     requireLogin();
 
+    // SELECT groups information along with a LEFT JOIN to get the role of the logged-in user in each group
     $sql = "SELECT 
             forum_groups.id,
             forum_groups.name,
@@ -32,6 +33,7 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groups</title>
+    <!-- CSS -->
     <link rel="stylesheet" href="styles/delete-confirm.css">
 </head>
 <body>
@@ -46,14 +48,15 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <textarea name="group_description" placeholder="Enter group description" required></textarea>
             <button type="submit">Create Group</button>
          </form>
-    </div>
 
-        <?php foreach ($groups as $group): ?>
-
-            <div class="group-information">
-                <h3><?php echo htmlspecialchars($group['name']); ?></h3>
-                <p><?php echo htmlspecialchars($group['description']); ?></p>
-
+        <?php if (empty($groups)): ?>
+            <p>No groups available.</p>
+        <?php else: ?>
+            <?php foreach ($groups as $group): ?>
+                    <div class="group">
+                        <h3><?php echo htmlspecialchars($group['name']); ?></h3>
+                        <p><?php echo htmlspecialchars($group['description']); ?></p>
+                    </div>
                 <?php if ($group['role_name'] !== null): ?>
                     <a href="group.php?id=<?php echo $group['id']; ?>">View Group</a>
                 <?php endif; ?>
@@ -68,10 +71,11 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <button type="submit">Delete Group</button>
                     </form>
                 <?php endif; ?>
-            </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 
-        <?php endforeach; ?>
+    <?php require_once 'includes/delete-confirm.php'; ?>
 
-        <?php require_once 'includes/delete-confirm.php'; ?>
 </body>
 </html>

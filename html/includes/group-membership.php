@@ -1,5 +1,5 @@
 <?php
-
+    // Function to get group membership details for a user
     function getGroupMembership($pdo, $groupId, $userId) {
         $sql = "SELECT role_id FROM group_members WHERE group_id = :group_id AND user_id = :user_id";
         $stmt = $pdo->prepare($sql);
@@ -9,4 +9,4 @@
         ]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+    } 

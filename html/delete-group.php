@@ -2,7 +2,6 @@
 
     require_once 'includes/database.php';
     require_once 'includes/auth.php';
-    require_once 'includes/group-membership.php';
 
     requireLogin();
 
@@ -17,8 +16,10 @@
         }
         
         try{
+            // Start of transaction
             $pdo->beginTransaction();
 
+            // Check if the user is an administrator of the group and if the group exists
             $sql = "SELECT forum_groups.id, group_members.user_id, group_members.role_id, group_roles.name AS role_name FROM forum_groups 
                     JOIN group_members ON forum_groups.id = group_members.group_id 
                     JOIN group_roles ON group_members.role_id = group_roles.id 
@@ -31,11 +32,12 @@
                 throw new Exception("Group not found.");
             }
 
-            if ($group['role_name'] != "administrator") {
+            if ($group['role_name'] !== 'administrator') {
                 throw new Exception("You are not authorized to delete this group.");
             }
 
-            // Delete posts with subquery
+            // Delete related data from child tables before deleting the group
+            // Delete posts belonging to discussions in this group
             $sql = "DELETE FROM posts WHERE discussion_id IN (SELECT id FROM discussions WHERE group_id = :group_id)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':group_id' => $groupId]);

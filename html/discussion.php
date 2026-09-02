@@ -14,7 +14,7 @@
     $discussionId = $_GET['id'];
 
     try{
-
+        // Fetch discussion details along with the creator's username
         $sql = "SELECT discussions.id, discussions.subject, discussions.group_id, discussions.user_id, discussions.created_at, users.username AS creator FROM discussions 
                 JOIN users ON discussions.user_id = users.id 
                 WHERE discussions.id = :discussion_id";
@@ -28,6 +28,8 @@
         }
 
         $userId = getUserId();
+
+        // Check that the logged-in user belongs to the discussion's group
         $membership = getGroupMembership($pdo, $discussion['group_id'], $userId);
 
         if (!$membership) {
@@ -35,6 +37,7 @@
             exit();
         }
 
+        // Fetch posts related to the discussion along with the creator's username
         $sql = "SELECT posts.id, posts.discussion_id, posts.user_id, posts.message, posts.created_at, users.username AS author
                 FROM posts 
                 JOIN users ON posts.user_id = users.id 
@@ -57,6 +60,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discussion</title>
+    <!-- CSS -->
     <link rel="stylesheet" href="styles/delete-confirm.css">
 </head>
 <body>
@@ -71,7 +75,9 @@
             <ul>
                 <?php foreach ($posts as $post): ?>
                     <li>
-                        <?php echo htmlspecialchars($post['message']); ?> by <?php echo htmlspecialchars($post['author']); ?> on <?php echo htmlspecialchars($post['created_at']); ?>
+                        <?php echo htmlspecialchars($post['message']); ?>
+                        by <?php echo htmlspecialchars($post['author']); ?>
+                        on <?php echo htmlspecialchars($post['created_at']); ?>
                     </li>
 
                     <li>
@@ -93,8 +99,8 @@
     </div>
 
     <div class="create-post-form">
-        <form method="POST"action="create-post.php">
-            <textarea type="text" name="message" placeholder="Message" required></textarea>
+        <form method ="POST" action="create-post.php">
+            <textarea name="message" placeholder="Message" required></textarea>
             <input type="hidden" name="discussion_id" value="<?php echo $discussionId; ?>">
             <button type="submit">Send message</button>
         </form>

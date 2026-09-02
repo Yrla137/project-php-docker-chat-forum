@@ -14,7 +14,6 @@
     $groupId = $_GET['id'];
 
     try{
-
         // Fetch group details
         $sql = "SELECT id, name, description FROM forum_groups WHERE id = :group_id";
         $stmt = $pdo->prepare($sql);
@@ -26,9 +25,10 @@
             exit();
         }
 
-        $role = getGroupMembership($pdo, $groupId, getUserId());
+        // Check that the logged-in user is a member of this group
+        $membership = getGroupMembership($pdo, $groupId, getUserId());
 
-        if (!$role) {
+        if (!$membership) {
             echo "You are not a member of this group.";
             exit();
         }
@@ -97,9 +97,7 @@
                         <a href="discussion.php?id=<?php echo $discussion['id']; ?>">
                             <?php echo htmlspecialchars($discussion['subject']); ?>
                         </a> by <?php echo htmlspecialchars($discussion['creator']); ?> on <?php echo htmlspecialchars($discussion['created_at']); ?>
-                    </li>
-
-                    <li>
+                        
                         <?php if ($discussion['user_id'] == getUserId()): ?>
                             <form
                             class="delete-form"
