@@ -11,9 +11,9 @@
         exit();
     }
 
-    $groupId = $_GET['id'];
+    $groupId = (int) $_GET['id'];
 
-    try{
+    try {
         // Fetch group details
         $sql = "SELECT id, name, description FROM forum_groups WHERE id = :group_id";
         $stmt = $pdo->prepare($sql);
@@ -34,25 +34,29 @@
         }
 
         // Fetch group members and their roles
-        $sql = "SELECT users.id AS user_id, users.username, group_roles.name AS group_role FROM group_members 
-                JOIN users ON group_members.user_id = users.id 
-                JOIN group_roles ON group_members.role_id = group_roles.id 
+        $sql = "SELECT users.id AS user_id, users.username, group_roles.name AS group_role
+                FROM group_members
+                JOIN users ON group_members.user_id = users.id
+                JOIN group_roles ON group_members.role_id = group_roles.id
                 WHERE group_members.group_id = :group_id";
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':group_id' => $groupId]);
         $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Fetch discussions related to the group
-        $sql = "SELECT discussions.id, discussions.user_id, discussions.subject, discussions.created_at, users.username AS creator FROM discussions 
-                JOIN users ON discussions.user_id = users.id 
+        $sql = "SELECT discussions.id, discussions.user_id, discussions.subject, discussions.created_at, users.username AS creator
+                FROM discussions
+                JOIN users ON discussions.user_id = users.id
                 WHERE discussions.group_id = :group_id";
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':group_id' => $groupId]);
         $discussions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-        exit();
+        error_log("Could not load group: " . $e->getMessage());
+        die("Could not load the group. Please try again.");
     }
 ?>
 
@@ -66,10 +70,10 @@
 </head>
 <body>
 
-    <?php require 'includes/navbar.php'; ?>
+    <?php require_once 'includes/navbar.php'; ?>
 
     <div class="back-to-groups">
-        <button onclick="window.location.href='groups.php'">Back to Groups</button>
+        <a class="group-link" href="groups.php">Back to Groups</a>
     </div>
 
     <div class="group-details">
@@ -77,61 +81,47 @@
         <p><?php echo htmlspecialchars($group['description']); ?></p>
     </div>
 
-    <div class="admin-actions">
-        <?php if ($membership['role_name'] === 'administrator'): ?>
-            
-            <a href="applications.php?group_id=<?php echo $group['id']; ?>">View Applications</a>
+    <?php if ($membership['role_name'] === 'administrator'): ?>
+        <div class="admin-actions">
+            <a class="group-link" href="applications.php?group_id=<?php echo (int) $group['id']; ?>">View Applications</a>
 
             <form method="POST" action="create-invitation.php">
-                <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
-                <button type="submit">Create Invitation Link</button>
+                <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
+                <button class="form-button" type="submit">Create Invitation Link</button>
             </form>
-
-        <?php endif; ?>
-    </div>
+        </div>
+    <?php endif; ?>
 
     <div class="group-members">
         <h3>Members</h3>
+
         <ul>
             <?php foreach ($members as $member): ?>
+                <li>
+                    <?php echo htmlspecialchars($member['username']) . " - " . htmlspecialchars($member['group_role']); ?>
 
-                <li><?php echo htmlspecialchars($member['username']) . " - " . htmlspecialchars($member['group_role']); ?>
+                    <?php if ($membership['role_name'] === 'administrator' && (int) $member['user_id'] !== (int) getUserId()): ?>
 
-                    <?php if ($member['user_id'] != getUserId()): ?>
-
-                        <?php if ($membership['role_name'] === 'administrator'): ?>
-
-                            <?php if ($member['group_role'] !== 'administrator'): ?>
-                                <form
-                                    class="delete-form"
-                                    data-delete-message="Are you sure you want to remove this member from the group?"
-                                    method="POST"
-                                    action="remove-member.php">
-
-                                    <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
-                                    <input type="hidden" name="member_id" value="<?php echo $member['user_id']; ?>">
-                                    <button type="submit">Remove</button>
-                                </form>
-                            <?php endif; ?>
-
-                            <form method="POST" action="change-member-role.php">
-                                <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
-                                <input type="hidden" name="member_id" value="<?php echo $member['user_id']; ?>">
-
-                                <select name="new_role">
-                                    <option value="member" <?php if ($member['group_role'] === 'member') echo 'selected'; ?>>
-                                        Member
-                                    </option>
-
-                                    <option value="administrator" <?php if ($member['group_role'] === 'administrator') echo 'selected'; ?>>
-                                        Administrator
-                                    </option>
-                                </select>
-
-                                <button type="submit">Change Role</button>
+                        <?php if ($member['group_role'] !== 'administrator'): ?>
+                            <form class="delete-form" data-delete-message="Are you sure you want to remove this member from the group?" method="POST" action="remove-member.php">
+                                <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
+                                <input type="hidden" name="member_id" value="<?php echo (int) $member['user_id']; ?>">
+                                <button class="danger-button" type="submit">Remove</button>
                             </form>
-
                         <?php endif; ?>
+
+                        <form method="POST" action="change-member-role.php">
+                            <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
+                            <input type="hidden" name="member_id" value="<?php echo (int) $member['user_id']; ?>">
+
+                            <select name="new_role">
+                                <option value="member" <?php if ($member['group_role'] === 'member') echo 'selected'; ?>>Member</option>
+                                <option value="administrator" <?php if ($member['group_role'] === 'administrator') echo 'selected'; ?>>Administrator</option>
+                            </select>
+
+                            <button class="form-button" type="submit">Change Role</button>
+                        </form>
+
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>
@@ -140,24 +130,24 @@
 
     <div class="group-discussions">
         <h3>Discussions</h3>
-            <?php if (empty($discussions)): ?>
-                <p>No discussions available.</p>
+
+        <?php if (empty($discussions)): ?>
+            <p class="status-message">No discussions available.</p>
         <?php else: ?>
             <ul>
                 <?php foreach ($discussions as $discussion): ?>
                     <li>
-                        <a href="discussion.php?id=<?php echo $discussion['id']; ?>">
+                        <a class="discussion-link" href="discussion.php?id=<?php echo (int) $discussion['id']; ?>">
                             <?php echo htmlspecialchars($discussion['subject']); ?>
-                        </a> by <?php echo htmlspecialchars($discussion['creator']); ?> on <?php echo htmlspecialchars($discussion['created_at']); ?>
-                        
-                        <?php if ($discussion['user_id'] == getUserId()): ?>
-                            <form
-                            class="delete-form"
-                            data-delete-message="Are you sure you want to delete this discussion? All posts within this discussion will also be deleted."
-                            method="POST"
-                            action="delete-discussion.php">
-                                <input type="hidden" name="discussion_id" value="<?php echo $discussion['id']; ?>">
-                                <button type="submit">Delete</button>
+                        </a>
+
+                        by <?php echo htmlspecialchars($discussion['creator']); ?>
+                        on <?php echo htmlspecialchars($discussion['created_at']); ?>
+
+                        <?php if ((int) $discussion['user_id'] === (int) getUserId()): ?>
+                            <form class="delete-form" data-delete-message="Are you sure you want to delete this discussion? All posts within this discussion will also be deleted." method="POST" action="delete-discussion.php">
+                                <input type="hidden" name="discussion_id" value="<?php echo (int) $discussion['id']; ?>">
+                                <button class="danger-button" type="submit">Delete</button>
                             </form>
                         <?php endif; ?>
                     </li>
@@ -167,14 +157,17 @@
     </div>
 
     <div class="create-discussion-form">
+        <h3>Start a Discussion</h3>
+
         <form method="POST" action="create-discussion.php">
-            <input type="text" name="subject" placeholder="Discussion subject" required>
+            <input class="form-input" type="text" name="subject" placeholder="Discussion subject" required>
+            <textarea class="form-textarea" name="message" placeholder="Write the first post" required></textarea>
             <input type="hidden" name="group_id" value="<?php echo $groupId; ?>">
-            <button type="submit">Start a Discussion</button>
+            <button class="form-button" type="submit">Start a Discussion</button>
         </form>
     </div>
 
-    <?php require_once 'includes/delete-confirm.php'; ?>
+<?php require_once 'includes/delete-confirm.php'; ?>
 
 </body>
 </html>

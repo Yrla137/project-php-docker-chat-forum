@@ -6,11 +6,27 @@
 
     requireLogin();
 
-    if($_SERVER['REQUEST_METHOD'] === "POST"){
-        $subject = trim($_POST['subject']);
-        $group_id = $_POST['group_id'];
+    if ($_SERVER['REQUEST_METHOD'] === "POST") {
+        $subject = trim($_POST['subject'] ?? '');
+        $message = trim($_POST['message'] ?? '');
+        $group_id = (int) ($_POST['group_id'] ?? 0);
         $user_id = getUserId();
-        
+
+        if (empty($subject)) {
+            echo "Please provide a subject for the discussion.";
+            exit();
+        }
+
+        if (empty($message)) {
+            echo "Please write the first post.";
+            exit();
+        }
+
+        if ($group_id <= 0) {
+            echo "Invalid group.";
+            exit();
+        }
+
         // Check that the logged-in user is a member of the group
         $membership = getGroupMembership($pdo, $group_id, $user_id);
 
@@ -19,26 +35,46 @@
             exit();
         }
 
-        if(empty($subject)){
-            echo "Please provide a subject for the discussion.";
-            exit();
-        }
+        try {
+            $pdo->beginTransaction();
 
-        try{
+            // Create the discussion
+            $sql = "INSERT INTO discussions (subject, group_id, user_id)
+                    VALUES (:subject, :group_id, :user_id)";
 
-            // Insert the new discussion into the discussions table
-            $sql = "INSERT INTO discussions (subject, group_id, user_id) VALUES (:subject, :group_id, :user_id)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':subject' => $subject,
                 ':group_id' => $group_id,
                 ':user_id' => $user_id
             ]);
-            header("Location: group.php?id=" . $group_id);
+
+            // Get the ID of the discussion that was just created
+            $discussion_id = $pdo->lastInsertId();
+
+            // Create the first post in the new discussion
+            $sql = "INSERT INTO posts (discussion_id, user_id, message)
+                    VALUES (:discussion_id, :user_id, :message)";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':discussion_id' => $discussion_id,
+                ':user_id' => $user_id,
+                ':message' => $message
+            ]);
+
+            $pdo->commit();
+
+            header("Location: discussion.php?id=" . $discussion_id);
             exit();
 
         } catch (PDOException $e) {
-            echo "Error: Creating discussion failed. " . $e->getMessage();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            error_log("Creating discussion failed: " . $e->getMessage());
+            echo "Creating discussion failed. Please try again.";
             exit();
         }
     }
