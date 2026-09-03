@@ -36,7 +36,7 @@
     <?php require_once 'includes/navbar.php'; ?>
 
     <?php if(isLoggedIn()): ?>
-            <h1>Welcome back <?php echo htmlspecialchars($username);?>!</h1>
+            <h1>Welcome <?php echo htmlspecialchars($username);?>!</h1>
             <p>Ready to talk about something interesting?</p>
         <?php else: ?>
             <h1>Welcome to our website!</h1>

@@ -2,6 +2,9 @@
 
 require_once 'includes/database.php';
 
+// Initialize error variable
+$error = null;
+
 // Get invitation information from the URL, if the user came from an invitation.
 $redirect = $_GET['redirect'] ?? null;
 $token = $_GET['token'] ?? null;
@@ -25,65 +28,60 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         empty($username) ||
         empty($email) ||
         empty($password)
-    ) {
-        echo "Please fill in all fields.";
-        exit();
-    }
+        ) {
+            $error = "Please fill in all fields.";
 
-    // Check that the email has a valid format.
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "Please enter a valid email address.";
-        exit();
-    }
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = "Please enter a valid email address.";
 
-    if (strlen($password) < 8) {
-        echo "Password must be at least 8 characters long.";
-        exit();
-    }
+        } elseif (strlen($password) < 8) {
+            $error = "Password must be at least 8 characters long.";
 
-    // Hash the password before storing it in the database.
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-    try {
-        $sql = "INSERT INTO users 
-                (first_name, last_name, username, email, password_hash)
-                VALUES 
-                (:firstname, :lastname, :username, :email, :password)";
-
-        $stmt = $pdo->prepare($sql);
-
-        $stmt->execute([
-            ':firstname' => $firstname,
-            ':lastname' => $lastname,
-            ':username' => $username,
-            ':email' => $email,
-            ':password' => $password_hash
-        ]);
-
-        if ($redirect && $token) {
-            // Continue to login while keeping the invitation token.
-            header(
-                "Location: login.php?redirect=accept-invitation.php&token=" .
-                urlencode($token)
-            );
         } else {
-            // Continue to the normal login page.
-            header("Location: login.php");
-        }
+            // Hash the password before storing it in the database.
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        exit();
+            try {
+                $sql = "INSERT INTO users 
+                        (first_name, last_name, username, email, password_hash)
+                        VALUES 
+                        (:firstname, :lastname, :username, :email, :password)";
 
-    } catch (PDOException $e) {
+                $stmt = $pdo->prepare($sql);
 
-        if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1062) {
-            // MySQL error 1062 means that a UNIQUE value already exists.
-            echo "Username or email already exists.";
-        } else {
-            error_log("Database error: " . $e->getMessage());
-            echo "Something went wrong, please try again.";
+                $stmt->execute([
+                    ':firstname' => $firstname,
+                    ':lastname' => $lastname,
+                    ':username' => $username,
+                    ':email' => $email,
+                    ':password' => $password_hash
+                ]);
+
+                if ($redirect && $token) {
+                    // Continue to login while keeping the invitation token.
+                    header(
+                        "Location: login.php?redirect=accept-invitation.php&token=" .
+                        urlencode($token)
+                    );
+                } else {
+                    // Continue to the normal login page.
+                    header("Location: login.php");
+                }
+
+                exit();
+
+            } catch (PDOException $e) {
+
+                if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1062) {
+                    // MySQL error 1062 means that a UNIQUE value already exists.
+                    $error = "Username or email already exists.";
+                } else {
+                    error_log("Database error: " . $e->getMessage());
+                    $error = "Something went wrong, please try again.";
+                }
+            }
         }
     }
-}
 
 ?>
 
@@ -134,6 +132,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             <?php endif; ?>
 
             <button type="submit">Register</button>
+
+            <?php if ($error): ?>
+                <p class="error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
 
         </div>
 

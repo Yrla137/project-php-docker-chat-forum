@@ -94,17 +94,44 @@
         <h3>Members</h3>
         <ul>
             <?php foreach ($members as $member): ?>
+
                 <li><?php echo htmlspecialchars($member['username']) . " - " . htmlspecialchars($member['group_role']); ?>
-                    <?php if( $membership['role_name'] === 'administrator' && $member['group_role'] !== 'administrator'): ?>
-                        <form
-                            class="delete-form"
-                            data-delete-message="Are you sure you want to remove this member from the group?"
-                            method="POST"
-                            action="remove-member.php">
-                            <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
-                            <input type="hidden" name="member_id" value="<?php echo $member['user_id']; ?>">
-                            <button type="submit">Remove</button>
-                        </form>
+
+                    <?php if ($member['user_id'] != getUserId()): ?>
+
+                        <?php if ($membership['role_name'] === 'administrator'): ?>
+
+                            <?php if ($member['group_role'] !== 'administrator'): ?>
+                                <form
+                                    class="delete-form"
+                                    data-delete-message="Are you sure you want to remove this member from the group?"
+                                    method="POST"
+                                    action="remove-member.php">
+
+                                    <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                                    <input type="hidden" name="member_id" value="<?php echo $member['user_id']; ?>">
+                                    <button type="submit">Remove</button>
+                                </form>
+                            <?php endif; ?>
+
+                            <form method="POST" action="change-member-role.php">
+                                <input type="hidden" name="group_id" value="<?php echo $group['id']; ?>">
+                                <input type="hidden" name="member_id" value="<?php echo $member['user_id']; ?>">
+
+                                <select name="new_role">
+                                    <option value="member" <?php if ($member['group_role'] === 'member') echo 'selected'; ?>>
+                                        Member
+                                    </option>
+
+                                    <option value="administrator" <?php if ($member['group_role'] === 'administrator') echo 'selected'; ?>>
+                                        Administrator
+                                    </option>
+                                </select>
+
+                                <button type="submit">Change Role</button>
+                            </form>
+
+                        <?php endif; ?>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>
