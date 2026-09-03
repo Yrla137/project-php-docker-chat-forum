@@ -1,8 +1,8 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
-require_once 'includes/group-membership.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
+require_once '../includes/group-membership.php';
 
 requireLogin();
 
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':application_id' => $existingApplication['id']]);
 
-            header("Location: groups.php?application_resubmitted=1");
+            header("Location: ../groups.php?application_resubmitted=1");
             exit();
         }
 
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':application_id' => $existingApplication['id']]);
 
-            header("Location: groups.php?application_resubmitted=1");
+            header("Location: ../groups.php?application_resubmitted=1");
             exit();
         }
 
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':user_id' => $userId
         ]);
 
-        header("Location: groups.php?application_submitted=1");
+        header("Location: ../groups.php?application_submitted=1");
         exit();
 
     } catch (PDOException $e) {

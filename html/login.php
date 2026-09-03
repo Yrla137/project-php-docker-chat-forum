@@ -20,6 +20,7 @@
 
         if (empty($username) || empty($password)) {
             $error = "Please fill in all fields.";
+        
         } else {
 
             try {
@@ -55,7 +56,7 @@
                         if ($redirect && $token) {
                             // Continue the invitation flow after login.
                             header(
-                                "Location: accept-invitation.php?token=" .
+                                "Location: actions/accept-invitation.php?token=" .
                                 urlencode($token)
                             );
                         } else {
@@ -99,33 +100,15 @@
                 <?php endif; ?>
 
                 <label for="username">Username:</label>
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    required
-                >
+                <input type="text" id="username" name="username" required>
 
                 <label for="password">Password:</label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    required
-                >
+                <input type="password" id="password" name="password" required>
 
                 <?php if ($redirect && $token): ?>
-                    <input
-                        type="hidden"
-                        name="redirect"
-                        value="<?php echo htmlspecialchars($redirect); ?>"
-                    >
+                    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
 
-                    <input
-                        type="hidden"
-                        name="token"
-                        value="<?php echo htmlspecialchars($token); ?>"
-                    >
+                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                 <?php endif; ?>
 
                 <button class="form-button" type="submit">
@@ -135,7 +118,7 @@
                 <?php if ($redirect && $token): ?>
                     <p class="register-link">
                         You don't have an account?
-                        <a href="register.php?redirect=accept-invitation.php&token=<?php echo urlencode($token); ?>">
+                        <a href="register.php?redirect=actions/accept-invitation.php&token=<?php echo urlencode($token); ?>">
                             Register here
                         </a>
                     </p>

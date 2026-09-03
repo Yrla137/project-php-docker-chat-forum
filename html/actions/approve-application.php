@@ -1,8 +1,8 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
-require_once 'includes/group-membership.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
+require_once '../includes/group-membership.php';
 
 requireLogin();
 
@@ -38,24 +38,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $membership = getGroupMembership($pdo, $application['group_id'], getUserId());
 
         if (!$membership || $membership['role_name'] !== 'administrator') {
-            echo "You do not have permission to reject applications for this group.";
+            echo "You do not have permission to approve applications for this group.";
             exit();
         }
 
-        // Reject the application.
+        // Add the user to the group and approve the application in one transaction.
+        $pdo->beginTransaction();
+
+        $sql = "INSERT INTO group_members (group_id, user_id, role_id)
+                VALUES (
+                    :group_id,
+                    :user_id,
+                    (SELECT id FROM group_roles WHERE name = 'member')
+                )";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':group_id' => $application['group_id'],
+            ':user_id' => $application['user_id']
+        ]);
+
         $sql = "UPDATE applications
-                SET status = 'rejected'
+                SET status = 'approved'
                 WHERE id = :application_id";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':application_id' => $application_id]);
 
-        header("Location: applications.php?group_id=" . $application['group_id'] . "&action=rejected");
+        $pdo->commit();
+
+        header("Location: ../applications.php?group_id=" . $application['group_id'] . "&action=approved");
         exit();
 
     } catch (PDOException $e) {
-        error_log("Rejecting application failed: " . $e->getMessage());
-        echo "Could not reject the application. Please try again.";
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        error_log("Approving application failed: " . $e->getMessage());
+        echo "Could not approve the application. Please try again.";
         exit();
     }
 }

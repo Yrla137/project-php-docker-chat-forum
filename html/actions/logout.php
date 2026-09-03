@@ -1,6 +1,6 @@
 <?php
 
-require_once 'includes/auth.php';
+require_once '../includes/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
@@ -8,6 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $_SESSION = [];
     session_destroy();
 
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }

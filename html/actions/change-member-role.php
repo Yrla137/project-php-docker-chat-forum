@@ -1,8 +1,8 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
-require_once 'includes/group-membership.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
+require_once '../includes/group-membership.php';
 
 requireLogin();
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':member_id' => $member_id
         ]);
 
-        header("Location: group.php?id=" . $group_id . "&action=role_changed");
+        header("Location: ../group.php?id=" . $group_id . "&action=role_changed");
         exit();
 
     } catch (PDOException $e) {

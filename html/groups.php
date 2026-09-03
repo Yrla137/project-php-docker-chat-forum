@@ -64,7 +64,7 @@
 
     <div class="groups-container">
         <div class="create-group-form">
-            <form class="create-group-form-content" method="POST" action="create-group.php">
+            <form class="create-group-form-content" method="POST" action="actions/create-group.php">
                 <input class="form-input" type="text" name="group_name" placeholder="Enter group name" required>
                 <textarea class="form-textarea" name="group_description" placeholder="Enter group description" required></textarea>
                 <button class="form-button" type="submit">Create Group</button>
@@ -87,7 +87,7 @@
                     <?php elseif ($group['application_status'] === 'pending'): ?>
                         <p class="status-message">Waiting for approval.</p>
                     <?php else: ?>
-                        <form method="POST" action="apply-to-group.php">
+                        <form method="POST" action="actions/apply-to-group.php">
                             <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
                             <button class="form-button" type="submit">Apply to join group</button>
                         </form>
@@ -98,7 +98,7 @@
                         class="delete-form"
                         data-delete-message="Are you sure you want to leave this group?"
                         method="POST"
-                        action="leave-group.php">
+                        action="actions/leave-group.php">
                             <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
                             <button class="danger-button" type="submit">Leave Group</button>
                         </form>
@@ -109,7 +109,7 @@
                         class="delete-form"
                         data-delete-message="Are you sure you want to delete this group? This action cannot be undone."
                         method="POST"
-                        action="delete-group.php">
+                        action="actions/delete-group.php">
                             <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
                             <button type="submit">Delete Group</button>
                         </form>

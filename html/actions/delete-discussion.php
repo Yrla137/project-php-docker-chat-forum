@@ -1,7 +1,7 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
 
 requireLogin();
 
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdo->commit();
 
-        header("Location: group.php?id=" . (int) $discussion['group_id']);
+        header("Location: ../group.php?id=" . (int) $discussion['group_id']);
         exit();
 
     } catch (Exception $e) {

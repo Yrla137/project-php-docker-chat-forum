@@ -1,8 +1,8 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
-require_once 'includes/group-membership.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
+require_once '../includes/group-membership.php';
 
 requireLogin();
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             ':user_id' => $user_id
         ]);
 
-        header("Location: discussion.php?id=" . $discussion_id);
+        header("Location: ../discussion.php?id=" . $discussion_id);
         exit();
 
     } catch (PDOException $e) {

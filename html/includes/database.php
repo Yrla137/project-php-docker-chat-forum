@@ -8,7 +8,7 @@
     $db_password = getenv('DB_PASSWORD');
 
     // The DSN (Data Source Name) tells PDO which database to connect to.
-    // utf8mb4 supports a wide range of characters, including emojis.
+    // utf8mb4 supports a wide range of characters including emojis.
     $dsn = "mysql:host=$db_host;port=$db_port;dbname=$db_name;charset=utf8mb4";
 
     try {

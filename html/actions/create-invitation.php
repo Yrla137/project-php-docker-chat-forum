@@ -1,8 +1,8 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
-require_once 'includes/group-membership.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
+require_once '../includes/group-membership.php';
 
 requireLogin();
 
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':created_by' => $user_id
         ]);
 
-        header("Location: invitation-link.php?token=" . urlencode($token));
+        header("Location: ../invitation-link.php?token=" . urlencode($token));
         exit();
 
     } catch (PDOException $e) {

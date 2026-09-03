@@ -59,8 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 if ($redirect && $token) {
                     // Continue to login while keeping the invitation token.
                     header(
-                        "Location: login.php?redirect=accept-invitation.php&token=" .
-                        urlencode($token)
+                        "Location: ../login.php?redirect=actions/accept-invitation.php&token=" . urlencode($token)
                     );
                 } else {
                     header("Location: login.php");
@@ -120,17 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             <p class="form-hint">Password must be at least 8 characters long.</p>
 
             <?php if ($redirect && $token): ?>
-                <input
-                    type="hidden"
-                    name="redirect"
-                    value="<?php echo htmlspecialchars($redirect); ?>"
-                >
+                <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
 
-                <input
-                    type="hidden"
-                    name="token"
-                    value="<?php echo htmlspecialchars($token); ?>"
-                >
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
             <?php endif; ?>
 
             <button class="form-button" type="submit">Register</button>

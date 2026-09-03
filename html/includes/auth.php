@@ -17,7 +17,7 @@
         }
     }
 
-    // Get the logged-in user's ID, or null if no user is logged in.
+    // Get the logged-in user's ID or null if no user is logged in.
     function getUserId() {
         return $_SESSION['user_id'] ?? null;
     }

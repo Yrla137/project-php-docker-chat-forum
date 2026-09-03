@@ -11,7 +11,7 @@
         exit();
     }
 
-    $discussionId = $_GET['id'];
+    $discussionId = (int) ($_GET['id'] ?? 0);
 
     try {
         // Get the discussion and the username of its creator.
@@ -94,7 +94,10 @@
                         </p>
 
                         <?php if ($post['user_id'] == getUserId()): ?>
-                            <form class="delete-form" data-delete-message="Are you sure you want to delete this post?" method="POST" action="delete-post.php">
+                            <form class="delete-form"
+                            data-delete-message="Are you sure you want to delete this post?"
+                            method="POST"
+                            action="actions/delete-post.php">
                                 <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
                                 <button class="danger-button" type="submit">Delete</button>
                             </form>
@@ -106,7 +109,7 @@
     </div>
 
     <div class="create-post-form">
-        <form method="POST" action="create-post.php">
+        <form method="POST" action="actions/create-post.php">
             <textarea class="form-textarea" name="message" placeholder="Message" required></textarea>
             <input type="hidden" name="discussion_id" value="<?php echo $discussionId; ?>">
             <button class="form-button" type="submit">Send message</button>

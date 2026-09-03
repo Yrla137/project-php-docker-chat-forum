@@ -1,61 +1,66 @@
 <?php
 
-    require_once 'includes/database.php';
-    require_once 'includes/auth.php';
+require_once 'includes/database.php';
+require_once 'includes/auth.php';
 
-    requireLogin();
+requireLogin();
 
-    $token = $_GET['token'] ?? null;
+$token = $_GET['token'] ?? '';
 
-    if(!$token){
-        echo "Invitation token is required.";
+if (empty($token)) {
+    echo "Invitation token is required.";
+    exit();
+}
+
+try {
+    // Fetch the invitation.
+    $sql = "SELECT token, group_id, created_by, created_at, used
+            FROM invitations
+            WHERE token = :token";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':token' => $token]);
+    $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$invitation) {
+        echo "Invalid invitation token.";
         exit();
     }
 
-    try {
-        // Fetch token details from the database
-        $sql = "SELECT token, group_id, created_by, created_at, used FROM invitations WHERE token = :token";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':token' => $token]);
-        $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$invitation) {
-            echo "Invalid invitation token.";
-            exit();
-        }
-
-        // Check if the invitation has already been used
-        if ($invitation['used'] == 1) {
-            echo "This invitation link has already been used.";
-            exit();
-        }
-
-        $createdAt = new DateTime($invitation['created_at']);
-        $expirationTime = clone $createdAt;
-        // Set expiration time to 24 hours after creation
-        $expirationTime->modify('+24 hours');
-
-        $now = new DateTime();
-
-        // Check if the invitation has expired
-        if ($now > $expirationTime) {
-            echo "This invitation link has expired.";
-            exit();
-        }
-
-        // Generate the invitation link for the user to accept
-        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
-            $protocol = 'https';
-        } else {
-            $protocol = 'http';
-        }
-        $host = $_SERVER['HTTP_HOST'];
-        $invitationLink = $protocol . "://" . $host . "/accept-invitation.php?token=" . urlencode($token);
-    
-    } catch (PDOException $e) {
-        echo "Error loading invitation: " . $e->getMessage();
+    // Check if the invitation has already been used.
+    if ((int) $invitation['used'] === 1) {
+        echo "This invitation link has already been used.";
         exit();
     }
+
+    // Check if the invitation is older than 24 hours.
+    $createdAt = new DateTime($invitation['created_at']);
+    $expirationTime = clone $createdAt;
+    $expirationTime->modify('+24 hours');
+
+    $now = new DateTime();
+
+    if ($now > $expirationTime) {
+        echo "This invitation link has expired.";
+        exit();
+    }
+
+    // Build the link used to accept the invitation.
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        $protocol = 'https';
+    } else {
+        $protocol = 'http';
+    }
+
+    $host = $_SERVER['HTTP_HOST'];
+    $invitationLink = $protocol . "://" . $host . "/actions/accept-invitation.php?token=" . urlencode($token);
+
+} catch (PDOException $e) {
+    error_log("Loading invitation failed: " . $e->getMessage());
+    echo "Could not load the invitation. Please try again.";
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -69,11 +74,13 @@
 
     <?php require 'includes/navbar.php'; ?>
 
-    <h2>Invitation Link</h2>
+    <main class="invitation-container">
+        <h2>Invitation Link</h2>
 
-    <a href="<?php echo htmlspecialchars($invitationLink); ?>">
-        Click here to accept the invitation
-    </a>
+        <a class="invitation-link" href="<?php echo htmlspecialchars($invitationLink); ?>">
+            Click here to accept the invitation
+        </a>
+    </main>
 
 </body>
 </html>

@@ -85,7 +85,7 @@
         <div class="admin-actions">
             <a class="group-link" href="applications.php?group_id=<?php echo (int) $group['id']; ?>">View Applications</a>
 
-            <form method="POST" action="create-invitation.php">
+            <form method="POST" action="actions/create-invitation.php">
                 <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
                 <button class="form-button" type="submit">Create Invitation Link</button>
             </form>
@@ -103,14 +103,17 @@
                     <?php if ($membership['role_name'] === 'administrator' && (int) $member['user_id'] !== (int) getUserId()): ?>
 
                         <?php if ($member['group_role'] !== 'administrator'): ?>
-                            <form class="delete-form" data-delete-message="Are you sure you want to remove this member from the group?" method="POST" action="remove-member.php">
+                            <form class="delete-form"
+                            data-delete-message="Are you sure you want to remove this member from the group?"
+                            method="POST"
+                            action="actions/remove-member.php">
                                 <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
                                 <input type="hidden" name="member_id" value="<?php echo (int) $member['user_id']; ?>">
                                 <button class="danger-button" type="submit">Remove</button>
                             </form>
                         <?php endif; ?>
 
-                        <form method="POST" action="change-member-role.php">
+                        <form method="POST" action="actions/change-member-role.php">
                             <input type="hidden" name="group_id" value="<?php echo (int) $group['id']; ?>">
                             <input type="hidden" name="member_id" value="<?php echo (int) $member['user_id']; ?>">
 
@@ -145,7 +148,10 @@
                         on <?php echo htmlspecialchars($discussion['created_at']); ?>
 
                         <?php if ((int) $discussion['user_id'] === (int) getUserId()): ?>
-                            <form class="delete-form" data-delete-message="Are you sure you want to delete this discussion? All posts within this discussion will also be deleted." method="POST" action="delete-discussion.php">
+                            <form class="delete-form"
+                            data-delete-message="Are you sure you want to delete this discussion? All posts within this discussion will also be deleted."
+                            method="POST"
+                            action="actions/delete-discussion.php">
                                 <input type="hidden" name="discussion_id" value="<?php echo (int) $discussion['id']; ?>">
                                 <button class="danger-button" type="submit">Delete</button>
                             </form>
@@ -159,7 +165,7 @@
     <div class="create-discussion-form">
         <h3>Start a Discussion</h3>
 
-        <form method="POST" action="create-discussion.php">
+        <form method="POST" action="actions/create-discussion.php">
             <input class="form-input" type="text" name="subject" placeholder="Discussion subject" required>
             <textarea class="form-textarea" name="message" placeholder="Write the first post" required></textarea>
             <input type="hidden" name="group_id" value="<?php echo $groupId; ?>">

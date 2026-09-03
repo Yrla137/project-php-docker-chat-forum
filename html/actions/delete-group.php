@@ -1,7 +1,7 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
 
 requireLogin();
 
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->rowCount() > 0) {
             $pdo->commit();
 
-            header("Location: groups.php");
+            header("Location: ../groups.php");
             exit();
         }
 

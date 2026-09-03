@@ -1,7 +1,7 @@
 <?php
 
-require_once 'includes/database.php';
-require_once 'includes/auth.php';
+require_once '../includes/database.php';
+require_once '../includes/auth.php';
 
 requireLogin();
 
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':post_id' => $postId]);
 
         if ($stmt->rowCount() > 0) {
-            header("Location: discussion.php?id=" . (int) $post['discussion_id']);
+            header("Location: ../discussion.php?id=" . (int) $post['discussion_id']);
             exit();
         }
 

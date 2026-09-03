@@ -21,7 +21,7 @@ require_once __DIR__ . '/auth.php';
                 </li>
 
                 <li>
-                    <form class="logout-form" method="POST" action="logout.php">
+                    <form class="logout-form" method="POST" action="actions/logout.php">
                         <button class="navbar-logout-button" type="submit">Logout</button>
                     </form>
                 </li>

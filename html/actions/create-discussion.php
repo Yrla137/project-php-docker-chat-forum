@@ -1,8 +1,8 @@
 <?php
 
-    require_once 'includes/database.php';
-    require_once 'includes/auth.php';
-    require_once 'includes/group-membership.php';
+    require_once '../includes/database.php';
+    require_once '../includes/auth.php';
+    require_once '../includes/group-membership.php';
 
     requireLogin();
 
@@ -65,7 +65,7 @@
 
             $pdo->commit();
 
-            header("Location: discussion.php?id=" . $discussion_id);
+            header("Location: ../discussion.php?id=" . $discussion_id);
             exit();
 
         } catch (PDOException $e) {
