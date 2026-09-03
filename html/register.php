@@ -2,7 +2,6 @@
 
 require_once 'includes/database.php';
 
-// Initialize error variable
 $error = null;
 
 // Get invitation information from the URL, if the user came from an invitation.
@@ -11,11 +10,11 @@ $token = $_GET['token'] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
-    $firstname = trim($_POST['firstname']);
-    $lastname = trim($_POST['lastname']);
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    $firstname = trim($_POST['firstname'] ?? null);
+    $lastname = trim($_POST['lastname'] ?? null);
+    $username = trim($_POST['username'] ?? null);
+    $email = trim($_POST['email'] ?? null);
+    $password = $_POST['password'] ?? null;
 
     // Keep the invitation information when the registration form is submitted.
     $redirect = $_POST['redirect'] ?? null;
@@ -64,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                         urlencode($token)
                     );
                 } else {
-                    // Continue to the normal login page.
                     header("Location: login.php");
                 }
 
@@ -96,9 +94,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
     <h1>Register new user</h1>
 
-    <form method="POST" action="register.php">
+    <form class="register-form" method="POST" action="register.php">
 
         <div class="register-form-container">
+
+            <?php if ($error): ?>
+                <p class="error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
 
             <label for="firstname">First Name:</label>
             <input type="text" id="firstname" name="firstname" required>
@@ -113,9 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             <input type="email" id="email" name="email" required>
 
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" required minlength="8">
 
-            <p>Password must be at least 8 characters long.</p>
+            <p class="form-hint">Password must be at least 8 characters long.</p>
 
             <?php if ($redirect && $token): ?>
                 <input
@@ -131,11 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 >
             <?php endif; ?>
 
-            <button type="submit">Register</button>
-
-            <?php if ($error): ?>
-                <p class="error"><?php echo htmlspecialchars($error); ?></p>
-            <?php endif; ?>
+            <button class="form-button" type="submit">Register</button>
 
         </div>
 

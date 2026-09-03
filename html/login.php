@@ -1,107 +1,155 @@
 <?php
-    
+
     require_once 'includes/database.php';
     require_once 'includes/auth.php';
 
-    // Initialize error variable
     $error = null;
 
-    // Get invitation redirect information from the URL
+    // Get invitation redirect information from the URL.
     $redirect = $_GET['redirect'] ?? null;
     $token = $_GET['token'] ?? null;
 
-    if($_SERVER['REQUEST_METHOD'] === "POST"){
-        $username = trim($_POST['username']);
-        $password = $_POST['password'];
+    if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
-        // Get invitation redirect information from the POST data
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        // Keep invitation information when the login form is submitted.
         $redirect = $_POST['redirect'] ?? null;
         $token = $_POST['token'] ?? null;
 
-        if(empty($username) || empty($password)){
-            echo "Please fill in all fields.";
-            exit();
-        }
+        if (empty($username) || empty($password)) {
+            $error = "Please fill in all fields.";
+        } else {
 
-        try{
-            $sql = "SELECT id, username, password_hash FROM users WHERE username = :username";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':username' => $username]);
+            try {
+                $sql = "SELECT id, username, password_hash
+                        FROM users
+                        WHERE username = :username";
 
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    ':username' => $username
+                ]);
 
-            if(!$user){
-                $error = "Invalid username or password.";
-            } else {
-                $passwordMatch = password_verify($password, $user['password_hash']);
-                // password_verify checks if the provided password matches the hashed password stored in the database.
-                if(!$passwordMatch){
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$user) {
                     $error = "Invalid username or password.";
                 } else {
-                    session_regenerate_id(true);
-                    // session_regenerate_id(true) generates a new session ID for the user, which helps prevent session fixation attacks.
-                    // The true parameter ensures that the old session is deleted.
-                    $_SESSION['user_id'] = $user['id'];
-                    // Store the user's ID in the session to keep them logged in.
 
-                    if ($redirect && $token) {
-                        // If the user came from an invitation, return to the invitation after login.
-                        header("Location: accept-invitation.php?token=" . urlencode($token));
+                    // Check if the entered password matches the stored password hash.
+                    $passwordMatch = password_verify(
+                        $password,
+                        $user['password_hash']
+                    );
+
+                    if (!$passwordMatch) {
+                        $error = "Invalid username or password.";
                     } else {
-                        // Else continue with the normal login flow.
-                        header("Location: index.php");
+
+                        // Regenerate the session ID after login to prevent session fixation.
+                        session_regenerate_id(true);
+                        $_SESSION['user_id'] = $user['id'];
+
+                        if ($redirect && $token) {
+                            // Continue the invitation flow after login.
+                            header(
+                                "Location: accept-invitation.php?token=" .
+                                urlencode($token)
+                            );
+                        } else {
+                            header("Location: index.php");
+                        }
+
+                        exit();
                     }
-                    exit();
                 }
+
+            } catch (PDOException $e) {
+                error_log("Database error: " . $e->getMessage());
+                $error = "Something went wrong, please try again.";
             }
-            
-        } catch (PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            echo "Something went wrong, please try again.";
         }
     }
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
+    ?>
 
-    <h1>Login</h1>
+    <!DOCTYPE html>
+    <html lang="en">
 
-    <form method="POST" action="login.php">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+    </head>
 
-        <div class="login-form-container">
+    <body>
 
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+        <h1>Login</h1>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Login</button>
+        <form class="login-form" method="POST" action="login.php">
 
-            <?php if ($redirect && $token): ?>
-                <p>You don't have an account? <a href="register.php?redirect=accept-invitation.php&token=<?php echo urlencode($token); ?>">
-                    Register here
-                </a></p>
-            <?php else: ?>
-                <a href="register.php">Register here</a>
-            <?php endif; ?>
+            <div class="login-form-container">
 
-            <?php if ($redirect && $token): ?>
-                <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-            <?php endif; ?>
+                <?php if ($error): ?>
+                    <p class="error">
+                        <?php echo htmlspecialchars($error); ?>
+                    </p>
+                <?php endif; ?>
 
-            
+                <label for="username">Username:</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                >
 
-        </div>
+                <label for="password">Password:</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                >
 
-    </form>
-    
-</body>
+                <?php if ($redirect && $token): ?>
+                    <input
+                        type="hidden"
+                        name="redirect"
+                        value="<?php echo htmlspecialchars($redirect); ?>"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="token"
+                        value="<?php echo htmlspecialchars($token); ?>"
+                    >
+                <?php endif; ?>
+
+                <button class="form-button" type="submit">
+                    Login
+                </button>
+
+                <?php if ($redirect && $token): ?>
+                    <p class="register-link">
+                        You don't have an account?
+                        <a href="register.php?redirect=accept-invitation.php&token=<?php echo urlencode($token); ?>">
+                            Register here
+                        </a>
+                    </p>
+                <?php else: ?>
+                    <p class="register-link">
+                        Don't have an account?
+                        <a href="register.php">Register here</a>
+                    </p>
+                <?php endif; ?>
+
+            </div>
+
+        </form>
+
+    </body>
+
 </html>
