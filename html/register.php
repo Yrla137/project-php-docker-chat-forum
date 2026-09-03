@@ -1,58 +1,85 @@
 <?php
-    require_once 'includes/database.php';
 
-       if($_SERVER['REQUEST_METHOD'] === "POST"){
-        $firstname = trim($_POST['firstname']);
-        $lastname = trim($_POST['lastname']);
-        $username = trim($_POST['username']);
-        $email = trim($_POST['email']);
-        $password = $_POST['password'];
+require_once 'includes/database.php';
 
-        if(empty($firstname) || empty($lastname) || empty($username) || empty($email) || empty($password)){
-            // empty checks if any of the fields following it are empty.
-        echo "Please fill in all fields.";
-        exit();
-        }
+$error = null;
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            // filter_var checks if something is vaild and in this case with FILTER_VALIDATE_EMAIL it checks if the email is valid.
-            echo("Please enter a valid email address.");
-            exit();
-            }
+// Get invitation information from the URL, if the user came from an invitation.
+$redirect = $_GET['redirect'] ?? null;
+$token = $_GET['token'] ?? null;
 
-        if (strlen($password) < 8) {
-            echo "Password must be at least 8 characters long.";
-            exit();
-        }
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
-        // Hashing $password which is yhe users password and putting it in a new variable.
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+    $firstname = trim($_POST['firstname'] ?? null);
+    $lastname = trim($_POST['lastname'] ?? null);
+    $username = trim($_POST['username'] ?? null);
+    $email = trim($_POST['email'] ?? null);
+    $password = $_POST['password'] ?? null;
 
-        
-       try {
-            $sql = "INSERT INTO users (first_name, last_name, username, email, password_hash) VALUES (:firstname, :lastname, :username, :email, :password)";
-            $stmt = $pdo->prepare($sql);
-            // The prepare method is used to prepare the SQL statement for execution. It helps prevent SQL injection by allowing you to bind parameters to the statement.
-            $stmt->execute([
-                // The execute method is used to run the prepared statement with the provided values.
-                ':firstname' => $firstname,
-                ':lastname' => $lastname,
-                ':username' => $username,
-                ':email' => $email,
-                ':password' => $password_hash
-            ]);
-            header('Location: login.php');
-            exit();
-        } catch (PDOException $e) {
-            if ($e->errorInfo[1] === 1062) {
-                // 1062 indicates a duplicate entry error.
-                echo "Username or email already exists.";
-            } else {
-                error_log("Database error: " . $e->getMessage());
-                echo "Something went wrong, please try again.";
+    // Keep the invitation information when the registration form is submitted.
+    $redirect = $_POST['redirect'] ?? null;
+    $token = $_POST['token'] ?? null;
+
+    // Check that all required fields have been filled in.
+    if (
+        empty($firstname) ||
+        empty($lastname) ||
+        empty($username) ||
+        empty($email) ||
+        empty($password)
+        ) {
+            $error = "Please fill in all fields.";
+
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = "Please enter a valid email address.";
+
+        } elseif (strlen($password) < 8) {
+            $error = "Password must be at least 8 characters long.";
+
+        } else {
+            // Hash the password before storing it in the database.
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+            try {
+                $sql = "INSERT INTO users 
+                        (first_name, last_name, username, email, password_hash)
+                        VALUES 
+                        (:firstname, :lastname, :username, :email, :password)";
+
+                $stmt = $pdo->prepare($sql);
+
+                $stmt->execute([
+                    ':firstname' => $firstname,
+                    ':lastname' => $lastname,
+                    ':username' => $username,
+                    ':email' => $email,
+                    ':password' => $password_hash
+                ]);
+
+                if ($redirect && $token) {
+                    // Continue to login while keeping the invitation token.
+                    header(
+                        "Location: ../login.php?redirect=actions/accept-invitation.php&token=" . urlencode($token)
+                    );
+                } else {
+                    header("Location: login.php");
+                }
+
+                exit();
+
+            } catch (PDOException $e) {
+
+                if (isset($e->errorInfo[1]) && $e->errorInfo[1] === 1062) {
+                    // MySQL error 1062 means that a UNIQUE value already exists.
+                    $error = "Username or email already exists.";
+                } else {
+                    error_log("Database error: " . $e->getMessage());
+                    $error = "Something went wrong, please try again.";
+                }
             }
         }
     }
+
 ?>
 
 <!DOCTYPE html>
@@ -66,8 +93,13 @@
 
     <h1>Register new user</h1>
 
-    <form method="POST" action="register.php">
+    <form class="register-form" method="POST" action="register.php">
+
         <div class="register-form-container">
+
+            <?php if ($error): ?>
+                <p class="error"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
 
             <label for="firstname">First Name:</label>
             <input type="text" id="firstname" name="firstname" required>
@@ -82,13 +114,21 @@
             <input type="email" id="email" name="email" required>
 
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <p>Password must be at least 8 characters long.</p>
+            <input type="password" id="password" name="password" required minlength="8">
 
-            <button type="submit">Register</button>
+            <p class="form-hint">Password must be at least 8 characters long.</p>
+
+            <?php if ($redirect && $token): ?>
+                <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+            <?php endif; ?>
+
+            <button class="form-button" type="submit">Register</button>
 
         </div>
+
     </form>
-    
+
 </body>
 </html>
