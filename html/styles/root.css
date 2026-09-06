@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Background colors */
+    --color-bg-main: #0d0b0c;
+    --color-bg-secondary: #110d0f;
+    --color-bg-surface: #181315;
+    --color-bg-surface-light: #1f191b;
+    --color-bg-input: #120e10;
+    --color-bg-overlay: rgba(5, 5, 6, 0.78);
+
+    /* Text colors */
+    --color-text-main: #f2ede7;
+    --color-text-secondary: #b8adb0;
+    --color-text-muted: #8f8588;
+    --color-text-dark: #0b0a0b;
+
+    /* Red colors */
+    --color-red-dark: #4a151f;
+    --color-red: #681e2b;
+    --color-red-light: #81293a;
+    --color-red-soft: #c45a68;
+    --color-red-hover: #8d3042;
+
+    /* Purple colors */
+    --color-purple-dark: #24191d;
+    --color-purple: #3b2a31;
+    --color-purple-light: #5a4049;
+    --color-purple-soft: #80606a;
+
+    /* Blue colors */
+    --color-blue-dark: #141518;
+    --color-blue: #24272d;
+    --color-blue-light: #3a3f48;
+    --color-blue-soft: #626872;
+
+    /* Neutral colors */
+    --color-white: #ffffff;
+    --color-off-white: #f2ede7;
+    --color-grey-light: #c9c0c2;
+    --color-grey: #8f8588;
+    --color-grey-dark: #3a3235;
+    --color-black: #050506;
+
+    /* Semantic colors */
+    --color-success: #58705a;
+    --color-success-light: #78927a;
+    --color-warning: #9b7135;
+    --color-warning-light: #bd914f;
+    --color-danger: #8f2433;
+    --color-danger-hover: #b12f42;
+
+    /* Border colors */
+    --color-border: #3f363a;
+    --color-border-light: #5a4b50;
+    --color-border-focus: #873343;
+    --color-border-subtle: rgba(242, 237, 231, 0.08);
+
+    /* Typography */
+    --font-heading: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --font-body: "Inter", Arial, Helvetica, sans-serif;
+
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 2.75rem;
+    --font-size-4xl: 3.5rem;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --line-height-body: 1.6;
+    --line-height-heading: 1.2;
+
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    --space-4xl: 6rem;
+
+    /* Responsive spacing */
+    --page-padding: clamp(1rem, 4vw, 3rem);
+    --section-spacing: clamp(2rem, 6vw, 5rem);
+    --content-gap: clamp(1rem, 2vw, 2rem);
+
+    /* Content widths */
+    --content-width: 1200px;
+    --content-width-medium: 900px;
+    --content-width-small: 700px;
+    --content-width-form: 480px;
+
+    /* Border radius */
+    --radius-small: 4px;
+    --radius-medium: 6px;
+    --radius-large: 8px;
+    --radius-round: 50%;
+
+    /* Shadows */
+    --shadow-small: 0 2px 6px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 6px 18px rgba(0, 0, 0, 0.4);
+    --shadow-large: 0 12px 30px rgba(0, 0, 0, 0.5);
+    --shadow-deep: 0 18px 45px rgba(0, 0, 0, 0.6);
+    --shadow-red: 0 8px 20px rgba(78, 12, 25, 0.28);
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.4s ease;
+
+    /* Form elements */
+    --input-height: 44px;
+    --input-padding: 0.75rem 1rem;
+    --button-padding: 0.7rem 1.2rem;
+    --button-radius: 5px;
+
+    /* Navbar */
+    --navbar-height: 70px;
+
+    /* Z-index */
+    --z-base: 1;
+    --z-content: 10;
+    --z-navbar: 100;
+    --z-overlay: 500;
+    --z-modal: 1000;
+}

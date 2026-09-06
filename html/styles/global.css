@@ -1,0 +1,80 @@
+@import url("root.css");
+@import url("navbar.css");
+
+/* Global reset */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+    padding: 0;
+}
+
+/* Global body */
+body {
+    min-height: 100vh;
+    color: var(--color-text-main);
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-body);
+    background-color: var(--color-bg-main);
+}
+
+/* Global typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+    color: var(--color-text-main);
+    font-family: var(--font-heading);
+    line-height: var(--line-height-heading);
+}
+
+p {
+    margin-top: 0;
+}
+
+a {
+    color: inherit;
+}
+
+/* Global form elements */
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+/* Global media */
+img,
+picture,
+video {
+    display: block;
+    max-width: 100%;
+}
+
+/* Global focus */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+    }
+}
