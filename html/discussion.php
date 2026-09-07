@@ -61,68 +61,114 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discussion</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/discussion.css">
     <link rel="stylesheet" href="styles/delete-confirm.css">
 </head>
+
 <body>
 
-<?php require_once 'includes/navbar.php'; ?>
+    <?php require_once 'includes/navbar.php'; ?>
 
-<div class="discussion-container">
+    <main class="discussion-page">
 
-    <div class="discussion-header">
-        <h2 class="discussion-title"><?php echo htmlspecialchars($discussion['subject']); ?></h2>
-    </div>
+        <div class="discussion-topbar">
+            <a class="back-link" href="group.php?id=<?php echo (int) $discussion['group_id']; ?>">
+                ← Back to Group
+            </a>
+        </div>
 
-    <div class="group-posts">
-        <h3>Posts</h3>
+        <section class="discussion-header">
+            <p class="discussion-eyebrow">Discussion</p>
 
-        <?php if (empty($posts)): ?>
-            <p class="status-message">No posts available.</p>
-        <?php else: ?>
-            <ul class="post-list">
-                <?php foreach ($posts as $post): ?>
-                    <li class="post-item">
-                        <p class="post-message"><?php echo htmlspecialchars($post['message']); ?></p>
+            <h1 class="discussion-title">
+                <?php echo htmlspecialchars($discussion['subject']); ?>
+            </h1>
 
-                        <p class="post-meta">
-                            by <?php echo htmlspecialchars($post['author']); ?>
-                            on <?php echo htmlspecialchars($post['created_at']); ?>
-                        </p>
+            <p class="discussion-meta">
+                Started by <?php echo htmlspecialchars($discussion['creator']); ?>
+                · <?php echo htmlspecialchars($discussion['created_at']); ?>
+            </p>
+        </section>
 
-                        <?php if ($post['user_id'] == getUserId()): ?>
-                            <form class="delete-form"
-                            data-delete-message="Are you sure you want to delete this post?"
-                            method="POST"
-                            action="actions/delete-post.php">
-                                <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
-                                <button class="danger-button" type="submit">Delete</button>
-                            </form>
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-    </div>
+        <section class="discussion-content">
 
-    <div class="create-post-form">
-        <form method="POST" action="actions/create-post.php">
-            <textarea class="form-textarea" name="message" placeholder="Message" required></textarea>
-            <input type="hidden" name="discussion_id" value="<?php echo $discussionId; ?>">
-            <button class="form-button" type="submit">Send message</button>
-        </form>
-    </div>
+            <div class="group-posts">
 
-    <div class="back-to-group">
-        <button class="form-button" onclick="window.location.href='group.php?id=<?php echo $discussion['group_id']; ?>'">Back to Group</button>
-    </div>
+                <?php if (empty($posts)): ?>
+                    <p class="status-message">No posts available.</p>
+                <?php else: ?>
+                    <ul class="post-list">
+                        <?php foreach ($posts as $post): ?>
+                            <li class="post-item">
 
-</div>
+                                <p class="post-message">
+                                    <?php echo htmlspecialchars($post['message']); ?>
+                                </p>
 
-<?php require_once 'includes/delete-confirm.php'; ?>
+                                <div class="post-footer">
+
+                                    <?php if ((int) $post['user_id'] === (int) getUserId()): ?>
+                                        <form
+                                            class="delete-form post-delete-form"
+                                            data-delete-message="Are you sure you want to delete this post?"
+                                            method="POST"
+                                            action="actions/delete-post.php">
+                                            <input type="hidden" name="post_id" value="<?php echo (int) $post['id']; ?>">
+                                            <button class="danger-button" type="submit">Delete</button>
+                                        </form>
+                                    <?php endif; ?>
+
+                                    <p class="post-meta">
+                                        <span class="post-author">
+                                            <?php echo htmlspecialchars($post['author']); ?>
+                                        </span>
+
+                                        <span class="post-date">
+                                            <?php echo htmlspecialchars($post['created_at']); ?>
+                                        </span>
+                                    </p>
+
+                                </div>
+
+                            </li>
+                        <?php endforeach; ?>
+
+                    </ul>
+
+                <?php endif; ?>
+
+            </div>
+
+            <div class="create-post">
+                <form class="create-post-form" method="POST" action="actions/create-post.php">
+
+                    <label class="message-label" for="message">Join the conversation</label>
+
+                    <textarea
+                        class="form-textarea"
+                        id="message"
+                        name="message"
+                        placeholder="Write a message..."
+                        required></textarea>
+
+                    <input type="hidden" name="discussion_id" value="<?php echo $discussionId; ?>">
+
+                    <button class="form-button" type="submit">Send Message</button>
+
+                </form>
+            </div>
+
+        </section>
+
+    </main>
+
+    <?php require_once 'includes/delete-confirm.php'; ?>
 
 </body>
 </html>
