@@ -56,7 +56,7 @@ if (isLoggedIn()) {
                     </h1>
 
                     <p class="home-text">
-                        Talk about something interesting, good or bad.
+                        Talk about whatever is on your mind.
                     </p>
 
                     <a class="home-button" href="groups.php">Explore Groups</a>

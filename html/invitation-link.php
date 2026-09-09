@@ -123,6 +123,7 @@ try {
 
     </main>
 
+    <!-- Javascript function to copy the invitation link to the clipboard -->
     <script>
         const copyButton = document.getElementById('copy-invitation');
         const invitationLink = document.getElementById('invitation-link');
