@@ -38,6 +38,8 @@ if (isLoggedIn()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/index.css">
 </head>
 
 <body>
@@ -54,7 +56,7 @@ if (isLoggedIn()) {
                     </h1>
 
                     <p class="home-text">
-                        Ready to talk about something interesting?
+                        Talk about whatever is on your mind.
                     </p>
 
                     <a class="home-button" href="groups.php">Explore Groups</a>

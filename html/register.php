@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 if ($redirect && $token) {
                     // Continue to login while keeping the invitation token.
                     header(
-                        "Location: ../login.php?redirect=actions/accept-invitation.php&token=" . urlencode($token)
+                        "Location: login.php?redirect=actions/accept-invitation.php&token=" . urlencode($token)
                     );
                 } else {
                     header("Location: login.php");
@@ -84,51 +84,84 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/register.css">
 </head>
+
 <body>
 
-    <h1>Register new user</h1>
+    <main class="auth-page register-page">
+        <section class="auth-container">
 
-    <form class="register-form" method="POST" action="register.php">
+            <div class="auth-intro">
+                <p class="auth-eyebrow">Enter the community</p>
+                <h1 class="auth-title">Register</h1>
+                <p class="auth-description">
+                    Create an account and find your place in the conversation.
+                </p>
+            </div>
 
-        <div class="register-form-container">
+            <div class="auth-card">
+                <form class="register-form" method="POST" action="register.php">
 
-            <?php if ($error): ?>
-                <p class="error"><?php echo htmlspecialchars($error); ?></p>
-            <?php endif; ?>
+                    <?php if ($error): ?>
+                        <p class="error-message">
+                            <?php echo htmlspecialchars($error); ?>
+                        </p>
+                    <?php endif; ?>
 
-            <label for="firstname">First Name:</label>
-            <input type="text" id="firstname" name="firstname" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstname">First Name</label>
+                            <input class="form-input" type="text" id="firstname" name="firstname" required>
+                        </div>
 
-            <label for="lastname">Last Name:</label>
-            <input type="text" id="lastname" name="lastname" required>
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                            <input class="form-input" type="text" id="lastname" name="lastname" required>
+                        </div>
+                    </div>
 
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input class="form-input" type="text" id="username" name="username" required>
+                    </div>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input class="form-input" type="email" id="email" name="email" required>
+                    </div>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required minlength="8">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input class="form-input" type="password" id="password" name="password" required minlength="8">
+                        <p class="form-hint">Password must be at least 8 characters long.</p>
+                    </div>
 
-            <p class="form-hint">Password must be at least 8 characters long.</p>
+                    <?php if ($redirect && $token): ?>
+                        <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+                        <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                    <?php endif; ?>
 
-            <?php if ($redirect && $token): ?>
-                <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+                    <button class="form-button" type="submit">Register</button>
 
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-            <?php endif; ?>
+                    <p class="auth-link">
+                        Already have an account?
+                        <a href="login.php">Login here</a>
+                    </p>
 
-            <button class="form-button" type="submit">Register</button>
+                </form>
+            </div>
 
-        </div>
+            <a class="home-link" href="index.php">← Back to Home</a>
 
-    </form>
+        </section>
+    </main>
 
 </body>
 </html>
