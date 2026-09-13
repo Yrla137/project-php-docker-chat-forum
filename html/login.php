@@ -77,62 +77,76 @@
     ?>
 
     <!DOCTYPE html>
-    <html lang="en">
+<html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login</title>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/login.css">
+</head>
 
-    <body>
+<body>
 
-        <h1>Login</h1>
+    <main class="auth-page login-page">
+        <section class="auth-container">
 
-        <form class="login-form" method="POST" action="login.php">
-
-            <div class="login-form-container">
-
-                <?php if ($error): ?>
-                    <p class="error">
-                        <?php echo htmlspecialchars($error); ?>
-                    </p>
-                <?php endif; ?>
-
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-
-                <?php if ($redirect && $token): ?>
-                    <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
-
-                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-                <?php endif; ?>
-
-                <button class="form-button" type="submit">
-                    Login
-                </button>
-
-                <?php if ($redirect && $token): ?>
-                    <p class="register-link">
-                        You don't have an account?
-                        <a href="register.php?redirect=actions/accept-invitation.php&token=<?php echo urlencode($token); ?>">
-                            Register here
-                        </a>
-                    </p>
-                <?php else: ?>
-                    <p class="register-link">
-                        Don't have an account?
-                        <a href="register.php">Register here</a>
-                    </p>
-                <?php endif; ?>
-
+            <div class="auth-intro">
+                <p class="auth-eyebrow">Welcome back</p>
+                <h1 class="auth-title">Login</h1>
+                <p class="auth-description">
+                    Return to the conversations waiting for you.
+                </p>
             </div>
 
-        </form>
+            <div class="auth-card">
+                <form class="login-form" method="POST" action="login.php">
 
-    </body>
+                    <?php if ($error): ?>
+                        <p class="error-message">
+                            <?php echo htmlspecialchars($error); ?>
+                        </p>
+                    <?php endif; ?>
 
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input class="form-input" type="text" id="username" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input class="form-input" type="password" id="password" name="password" required>
+                    </div>
+
+                    <?php if ($redirect && $token): ?>
+                        <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
+                        <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                    <?php endif; ?>
+
+                    <button class="form-button" type="submit">Login</button>
+
+                    <?php if ($redirect && $token): ?>
+                        <p class="auth-link">
+                            Don't have an account?
+                            <a href="register.php?redirect=actions/accept-invitation.php&token=<?php echo urlencode($token); ?>">
+                                Register here
+                            </a>
+                        </p>
+                    <?php else: ?>
+                        <p class="auth-link">
+                            Don't have an account?
+                            <a href="register.php">Register here</a>
+                        </p>
+                    <?php endif; ?>
+
+                </form>
+            </div>
+
+            <a class="home-link" href="index.php">← Back to Home</a>
+
+        </section>
+    </main>
+
+</body>
 </html>

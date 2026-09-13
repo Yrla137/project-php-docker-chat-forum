@@ -1,0 +1,107 @@
+/* Navbar container */
+.navbar-container {
+    width: 100%;
+    padding: 0 var(--page-padding);
+    background: rgba(5, 5, 6, 0.96);
+    border-bottom: 1px solid var(--color-border-subtle);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Navbar */
+.navbar {
+    width: min(100%, var(--content-width));
+    min-height: var(--navbar-height);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Navbar list */
+.navbar-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 2rem);
+    list-style: none;
+}
+
+/* Navbar links */
+.navbar-link,
+.navbar-logout-button {
+    padding: 0;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition:
+        color var(--transition-normal),
+        text-shadow var(--transition-normal),
+        transform var(--transition-normal);
+}
+
+.navbar-link:hover,
+.navbar-logout-button:hover {
+    color: var(--color-red-soft);
+    text-shadow: 0 3px 8px rgba(90, 15, 28, 0.65);
+    transform: translateY(-1px);
+}
+
+.navbar-link:focus-visible,
+.navbar-logout-button:focus-visible {
+    color: var(--color-red-soft);
+    outline: none;
+    text-shadow: 0 3px 8px rgba(90, 15, 28, 0.65);
+}
+
+/* Logout form */
+.logout-form {
+    margin: 0;
+}
+
+/* Tablet screens */
+@media (max-width: 700px) {
+    .navbar-container {
+        padding: 0 clamp(1rem, 4vw, 1.5rem);
+    }
+
+    .navbar-list {
+        gap: clamp(0.8rem, 3vw, 1.25rem);
+    }
+}
+
+/* Small screens */
+@media (max-width: 420px) {
+    .navbar-container {
+        padding: 0 1rem;
+    }
+
+    .navbar-list {
+        gap: 0.8rem;
+    }
+
+    .navbar-link,
+    .navbar-logout-button {
+        font-size: var(--font-size-xs);
+        letter-spacing: 0.02em;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .navbar-link,
+    .navbar-logout-button {
+        transition: color var(--transition-normal), text-shadow var(--transition-normal);
+    }
+
+    .navbar-link:hover,
+    .navbar-logout-button:hover {
+        transform: none;
+    }
+}

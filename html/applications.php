@@ -58,43 +58,86 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Applications</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/applications.css">
 </head>
+
 <body>
 
     <?php require_once 'includes/navbar.php'; ?>
 
-    <main class="applications-container">
-        <h2>Pending Applications for <?php echo htmlspecialchars($group['group_name']); ?></h2>
+    <main class="applications-page">
 
-        <?php if (empty($applications)): ?>
-            <p class="status-message">No pending applications.</p>
-        <?php else: ?>
-            <ul class="applications-list">
-                <?php foreach ($applications as $application): ?>
-                    <li class="application-item">
-                        <span><?php echo htmlspecialchars($application['username']); ?></span>
-
-                        <form class="approve-form" method="POST" action="actions/approve-application.php">
-                            <input type="hidden" name="application_id" value="<?php echo (int) $application['id']; ?>">
-                            <button class="form-button" type="submit">Approve</button>
-                        </form>
-
-                        <form class="reject-form" method="POST" action="actions/reject-application.php">
-                            <input type="hidden" name="application_id" value="<?php echo (int) $application['id']; ?>">
-                            <button class="danger-button" type="submit">Reject</button>
-                        </form>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-
-        <div class="back-to-group">
-            <a href="group.php?id=<?php echo (int) $group['id']; ?>">Back to Group</a>
+        <div class="applications-topbar">
+            <a class="back-link" href="group.php?id=<?php echo (int) $group['id']; ?>">
+                ← Back to Group
+            </a>
         </div>
+
+        <section class="applications-header">
+            <p class="applications-eyebrow">Membership Requests</p>
+
+            <h1 class="applications-title">Pending Applications</h1>
+
+            <p class="applications-description">
+                Review requests to join
+                <strong><?php echo htmlspecialchars($group['group_name']); ?></strong>.
+            </p>
+        </section>
+
+        <section class="applications-panel">
+
+            <?php if (empty($applications)): ?>
+
+                <div class="empty-applications">
+                    <p class="status-message">No pending applications.</p>
+                </div>
+
+            <?php else: ?>
+
+                <ul class="applications-list">
+
+                    <?php foreach ($applications as $application): ?>
+                        <li class="application-item">
+
+                            <div class="application-user">
+                                <span class="application-username">
+                                    <?php echo htmlspecialchars($application['username']); ?>
+                                </span>
+
+                                <span class="application-status">
+                                    Pending
+                                </span>
+                            </div>
+
+                            <div class="application-actions">
+
+                                <form class="approve-form" method="POST" action="actions/approve-application.php">
+                                    <input type="hidden" name="application_id" value="<?php echo (int) $application['id']; ?>">
+                                    <button class="approve-button" type="submit">Approve</button>
+                                </form>
+
+                                <form class="reject-form" method="POST" action="actions/reject-application.php">
+                                    <input type="hidden" name="application_id" value="<?php echo (int) $application['id']; ?>">
+                                    <button class="danger-button" type="submit">Reject</button>
+                                </form>
+
+                            </div>
+
+                        </li>
+                    <?php endforeach; ?>
+
+                </ul>
+
+            <?php endif; ?>
+
+        </section>
+
     </main>
 
 </body>
