@@ -11,70 +11,79 @@
 
     if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
-        $username = trim($_POST['username'] ?? '');
-        $password = $_POST['password'] ?? '';
+        // Check that all required parameters exist in the request.
+        if (
+            isset($_POST['username']) &&
+            isset($_POST['password'])
+        ) {
+            $username = trim($_POST['username']);
+            $password = $_POST['password'];
 
-        // Keep invitation information when the login form is submitted.
-        $redirect = $_POST['redirect'] ?? null;
-        $token = $_POST['token'] ?? null;
+            // Keep invitation information when the login form is submitted.
+            $redirect = $_POST['redirect'] ?? null;
+            $token = $_POST['token'] ?? null;
 
-        if (empty($username) || empty($password)) {
-            $error = "Please fill in all fields.";
-        
-        } else {
+            if (empty($username) || empty($password)) {
+                $error = "Please fill in all fields.";
+            
+            } else {
 
-            try {
-                $sql = "SELECT id, username, password_hash
-                        FROM users
-                        WHERE username = :username";
+                try {
+                    $sql = "SELECT id, username, password_hash
+                            FROM users
+                            WHERE username = :username";
 
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([
-                    ':username' => $username
-                ]);
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([
+                        ':username' => $username
+                    ]);
 
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                if (!$user) {
-                    $error = "Invalid username or password.";
-                } else {
-
-                    // Check if the entered password matches the stored password hash.
-                    $passwordMatch = password_verify(
-                        $password,
-                        $user['password_hash']
-                    );
-
-                    if (!$passwordMatch) {
+                    if (!$user) {
                         $error = "Invalid username or password.";
                     } else {
 
-                        // Regenerate the session ID after login to prevent session fixation.
-                        session_regenerate_id(true);
-                        $_SESSION['user_id'] = $user['id'];
+                        // Check if the entered password matches the stored password hash.
+                        $passwordMatch = password_verify(
+                            $password,
+                            $user['password_hash']
+                        );
 
-                        if ($redirect && $token) {
-                            // Continue the invitation flow after login.
-                            header(
-                                "Location: actions/accept-invitation.php?token=" .
-                                urlencode($token)
-                            );
+                        if (!$passwordMatch) {
+                            $error = "Invalid username or password.";
                         } else {
-                            header("Location: index.php");
+
+                            // Regenerate the session ID after login to prevent session fixation.
+                            session_regenerate_id(true);
+                            $_SESSION['user_id'] = $user['id'];
+
+                            if ($redirect && $token) {
+                                // Continue the invitation flow after login.
+                                header(
+                                    "Location: actions/accept-invitation.php?token=" .
+                                    urlencode($token)
+                                );
+                            } else {
+                                header("Location: index.php");
+                            }
+
+                            exit();
                         }
-
-                        exit();
                     }
-                }
 
-            } catch (PDOException $e) {
-                error_log("Database error: " . $e->getMessage());
-                $error = "Something went wrong, please try again.";
+                } catch (PDOException $e) {
+                    error_log("Database error: " . $e->getMessage());
+                    $error = "Something went wrong, please try again.";
+                }
             }
+
+        } else {
+            $error = "Required fields are missing.";
         }
     }
 
-    ?>
+?>
 
     <!DOCTYPE html>
 <html lang="en">

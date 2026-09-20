@@ -10,23 +10,31 @@ $token = $_GET['token'] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
-    $firstname = trim($_POST['firstname'] ?? null);
-    $lastname = trim($_POST['lastname'] ?? null);
-    $username = trim($_POST['username'] ?? null);
-    $email = trim($_POST['email'] ?? null);
-    $password = $_POST['password'] ?? null;
-
-    // Keep the invitation information when the registration form is submitted.
-    $redirect = $_POST['redirect'] ?? null;
-    $token = $_POST['token'] ?? null;
-
-    // Check that all required fields have been filled in.
+    // Check that all required parameters exist in the request.
     if (
-        empty($firstname) ||
-        empty($lastname) ||
-        empty($username) ||
-        empty($email) ||
-        empty($password)
+        isset($_POST['firstname']) &&
+        isset($_POST['lastname']) &&
+        isset($_POST['username']) &&
+        isset($_POST['email']) &&
+        isset($_POST['password'])
+    ) {
+        $firstname = trim($_POST['firstname']);
+        $lastname = trim($_POST['lastname']);
+        $username = trim($_POST['username']);
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
+
+        // Keep the invitation information when the registration form is submitted.
+        $redirect = $_POST['redirect'] ?? null;
+        $token = $_POST['token'] ?? null;
+
+        // Check that all required fields have been filled in.
+        if (
+            empty($firstname) ||
+            empty($lastname) ||
+            empty($username) ||
+            empty($email) ||
+            empty($password)
         ) {
             $error = "Please fill in all fields.";
 
@@ -78,7 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 }
             }
         }
+
+    } else {
+        $error = "Required fields are missing.";
     }
+}
 
 ?>
 
